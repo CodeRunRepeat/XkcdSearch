@@ -1,4 +1,3 @@
-# XkcdSearch
 I've always loved [xkcd](https://xkcd.com) and some of their comics really talk to me. They've been around for ages though,
 and it's impossible by now to find this old comic that's so appropriate for the occasion, since I only remember the punchline
 or a couple of words from the captions.
