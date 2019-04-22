@@ -2,6 +2,14 @@
   "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
   "contentVersion": "1.0.0.0",
   "parameters": {
+    "serverfarms_XkcdDataExtractionFunctionsPlan_name": {
+      "defaultValue": "XkcdDataExtractionFunctionsPlan",
+      "type": "String"
+    },
+    "vaults_XkcdSearchKeyVault_name": {
+      "defaultValue": "XkcdSearchKeyVault",
+      "type": "String"
+    },
     "dataExtractionAppName": {
       "type": "string",
       "minLength": 1,
@@ -121,10 +129,108 @@
       "metadata": {
         "description": "Location of the Logic App."
       }
+    },
+    "accounts_XkcdOcrService_name": {
+      "defaultValue": "XkcdOcrService",
+      "type": "String"
     }
   },
   "variables": {},
   "resources": [
+    {
+      "type": "Microsoft.Web/serverfarms",
+      "apiVersion": "2016-09-01",
+      "name": "[parameters('serverfarms_XkcdDataExtractionFunctionsPlan_name')]",
+      "location": "West Europe",
+      "sku": {
+        "name": "Y1",
+        "tier": "Dynamic",
+        "size": "Y1",
+        "family": "Y",
+        "capacity": 0
+      },
+      "kind": "functionapp",
+      "properties": {
+        "name": "[parameters('serverfarms_XkcdDataExtractionFunctionsPlan_name')]",
+        "perSiteScaling": false,
+        "reserved": false,
+        "targetWorkerCount": 0,
+        "targetWorkerSizeId": 0
+      }
+    },
+    {
+      "type": "Microsoft.KeyVault/vaults",
+      "apiVersion": "2016-10-01",
+      "name": "[parameters('vaults_XkcdSearchKeyVault_name')]",
+      "location": "westeurope",
+      "properties": {
+        "sku": {
+          "family": "A",
+          "name": "Standard"
+        },
+        "tenantId": "72f988bf-86f1-41af-91ab-2d7cd011db47",
+        "accessPolicies": [
+          {
+            "tenantId": "72f988bf-86f1-41af-91ab-2d7cd011db47",
+            "objectId": "ed2e1cf2-75c6-463f-af6e-5ed5867d1813",
+            "permissions": {
+              "keys": [
+                "Get",
+                "List",
+                "Update",
+                "Create",
+                "Import",
+                "Delete",
+                "Recover",
+                "Backup",
+                "Restore"
+              ],
+              "secrets": [
+                "Get",
+                "List",
+                "Set",
+                "Delete",
+                "Recover",
+                "Backup",
+                "Restore"
+              ],
+              "certificates": [
+                "Get",
+                "List",
+                "Update",
+                "Create",
+                "Import",
+                "Delete",
+                "Recover",
+                "Backup",
+                "Restore",
+                "ManageContacts",
+                "ManageIssuers",
+                "GetIssuers",
+                "ListIssuers",
+                "SetIssuers",
+                "DeleteIssuers"
+              ]
+            }
+          }
+        ],
+        "enabledForDeployment": false,
+        "enabledForDiskEncryption": false,
+        "enabledForTemplateDeployment": true
+      }
+    },
+
+    {
+      "type": "Microsoft.CognitiveServices/accounts",
+      "apiVersion": "2016-02-01-preview",
+      "name": "[parameters('accounts_XkcdOcrService_name')]",
+      "location": "westeurope",
+      "sku": {
+        "name": "F0"
+      },
+      "kind": "ComputerVision",
+      "properties": {}
+    },
     {
       "name": "[parameters('dataExtractionAppName')]",
       "type": "Microsoft.Logic/workflows",
@@ -201,7 +307,7 @@
                 "actions": {
                   "Until": {
                     "type": "Until",
-                    "expression": "@equals(variables('counter'), 4)",
+                    "expression": "@greater(variables('counter'), variables('comicCount'))",
                     "limit": {
                       "count": 60,
                       "timeout": "PT1H"

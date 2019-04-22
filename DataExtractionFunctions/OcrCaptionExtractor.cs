@@ -42,14 +42,15 @@ namespace XkcdSearch.DataExtractionFunctions
             }
 
             return
-                string.Join(
-                    separator,
-                    result.RecognitionResults.Select(
-                        r => string.Join(
-                            separator, 
-                            r.Lines.Select(l => l.Text).ToArray()))
-                    .ToArray());
-            
+                string
+                    .Join(
+                        separator,
+                        result.RecognitionResults.Select(
+                            r => string.Join(
+                                separator, 
+                                r.Lines.Select(l => l.Text).ToArray()))
+                        .ToArray())
+                    .Replace('"', ' ');
         }
     }
 }
