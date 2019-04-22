@@ -29,6 +29,9 @@
     <Content Include="Deploy-AzureResourceGroup.ps1" />
     <Content Include="XkcdDataExtractionApp.json" />
     <Content Include="XkcdDataExtractionApp.parameters.json" />
+    <None Include="xkcdsearch\xkcdcomics-index.json" />
+    <None Include="xkcdsearch\xkcdcomics-indexer.json" />
+    <None Include="xkcdsearch\xkcdcomicsdatasource.json" />
   </ItemGroup>
   <Target Name="GetReferenceAssemblyPaths" />
 </Project>

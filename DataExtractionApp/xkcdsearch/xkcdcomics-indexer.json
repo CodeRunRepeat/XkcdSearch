@@ -1,0 +1,21 @@
+﻿{
+  "@odata.context": "https://xkcdsearch.search.windows.net/$metadata#indexers/$entity",
+  "@odata.etag": "\"0x8D6C734BF4905F0\"",
+  "name": "xkcdcomics-indexer",
+  "description": null,
+  "dataSourceName": "xkcdcomicsdatasource",
+  "targetIndexName": "xkcdcomics-index",
+  "disabled": null,
+  "schedule": {
+    "interval": "P1D",
+    "startTime": "0001-01-01T00:00:00Z"
+  },
+  "parameters": {
+    "batchSize": null,
+    "maxFailedItems": null,
+    "maxFailedItemsPerBatch": null,
+    "base64EncodeKeys": false,
+    "configuration": {}
+  },
+  "fieldMappings": []
+}
