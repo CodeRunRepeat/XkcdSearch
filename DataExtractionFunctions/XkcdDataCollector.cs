@@ -14,7 +14,7 @@ namespace XkcdSearch.DataExtractionFunctions
         private const string imagelinkHint = "Image URL (for hotlinking/embedding):";
 
         private const string permalinkRegex = @"https://xkcd\.com/(\d+)/";
-        private const string imagelinkRegex = @"https://imgs\.xkcd\.com/comics/[\w\(\)\.]+";
+        private const string imagelinkRegex = @"https://imgs\.xkcd\.com/comics/[\w\-\(\)\.]+";
 
         private const string titleHint = @"<title>";
         private const string titleRegex = @"xkcd:([^\<]+)\</title\>";

@@ -41,16 +41,26 @@ namespace XkcdSearch.DataExtractionFunctions
                 result = await client.GetReadOperationResultAsync(operationId);
             }
 
-            return
-                string
+            var overallResults = string
                     .Join(
                         separator,
                         result.RecognitionResults.Select(
                             r => string.Join(
-                                separator, 
+                                separator,
                                 r.Lines.Select(l => l.Text).ToArray()))
-                        .ToArray())
-                    .Replace('"', ' ');
+                        .ToArray());
+
+            return CleanupText(overallResults);
+        }
+
+        private string CleanupText(string text)
+        {
+            char[] forbiddenChars = { '"', '`', '\\', '\'' };
+
+            foreach (var c in forbiddenChars)
+                text = text.Replace(c, ' ');
+
+            return text;
         }
     }
 }

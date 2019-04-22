@@ -35,5 +35,19 @@ namespace DataExtractionFunctionsTest
             Assert.IsInstanceOfType(((OkObjectResult)result.Result).Value, typeof(XkcdComicInformation));
             Assert.IsTrue(((XkcdComicInformation)((OkObjectResult)result.Result).Value).ComicUrl.Contains("(1)"));
         }
+
+        [TestMethod]
+        public void TestSpecialChars2()
+        {
+            var request = new MockHttpRequest();
+            request.AddQueryParameter("comicId", "33");
+            var result = GetComicInformationFunction.Run(request, new DebugLogger("GetComicInformationTest"));
+            result.Wait();
+
+            Assert.IsInstanceOfType(result.Result, typeof(OkObjectResult));
+            Assert.IsNotNull(((OkObjectResult)result.Result).Value);
+            Assert.IsInstanceOfType(((OkObjectResult)result.Result).Value, typeof(XkcdComicInformation));
+            Assert.IsTrue(((XkcdComicInformation)((OkObjectResult)result.Result).Value).ComicUrl.Contains("-"));
+        }
     }
 }

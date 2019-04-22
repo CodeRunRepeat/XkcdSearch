@@ -15,6 +15,9 @@
         },
         "secretName": "xkcddatastoragekey"
       }
+    },
+    "XkcdDailyExtractionAppName": {
+      "value": "XkcdDailyExtractionApp"
     }
   }
 }
