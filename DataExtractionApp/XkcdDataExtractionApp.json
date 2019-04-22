@@ -1,0 +1,464 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "dataExtractionAppName": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 80,
+      "metadata": {
+        "description": "Name of the Logic App."
+      }
+    },
+    "dataExtractionAppLocation": {
+      "type": "string",
+      "defaultValue": "[resourceGroup().location]",
+      "allowedValues": [
+        "[resourceGroup().location]",
+        "eastasia",
+        "southeastasia",
+        "centralus",
+        "eastus",
+        "eastus2",
+        "westus",
+        "northcentralus",
+        "southcentralus",
+        "northeurope",
+        "westeurope",
+        "japanwest",
+        "japaneast",
+        "brazilsouth",
+        "australiaeast",
+        "australiasoutheast",
+        "southindia",
+        "centralindia",
+        "westindia",
+        "canadacentral",
+        "canadaeast",
+        "uksouth",
+        "ukwest",
+        "westcentralus",
+        "westus2"
+      ],
+      "metadata": {
+        "description": "Location of the Logic App."
+      }
+    },
+    "XkcdDataType": {
+      "type": "string",
+      "defaultValue": "Standard_LRS",
+      "allowedValues": [
+        "Standard_LRS",
+        "Standard_ZRS",
+        "Standard_GRS",
+        "Standard_RAGRS",
+        "Premium_LRS"
+      ]
+    },
+    "XkcdDataName": {
+      "type": "string",
+      "defaultValue": "xkcddatastorage"
+    },
+    "azuretables_1_Connection_Name": {
+      "type": "string",
+      "defaultValue": "azuretables"
+    },
+    "azuretables_1_Connection_DisplayName": {
+      "type": "string",
+      "defaultValue": "xkcddatastorageconnection"
+    },
+    "azuretables_1_storageaccount": {
+      "type": "string",
+      "metadata": {
+        "description": "The name of your storage account"
+      },
+      "defaultValue": "xkcddatastorage"
+    },
+    "azuretables_1_sharedkey": {
+      "type": "securestring",
+      "metadata": {
+        "description": "The shared storage key of your storage account"
+      }
+    },
+    "XkcdComicExtractionAppName": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 80,
+      "metadata": {
+        "description": "Name of the Logic App."
+      }
+    },
+    "XkcdComicExtractionAppLocation": {
+      "type": "string",
+      "defaultValue": "[resourceGroup().location]",
+      "allowedValues": [
+        "[resourceGroup().location]",
+        "eastasia",
+        "southeastasia",
+        "centralus",
+        "eastus",
+        "eastus2",
+        "westus",
+        "northcentralus",
+        "southcentralus",
+        "northeurope",
+        "westeurope",
+        "japanwest",
+        "japaneast",
+        "brazilsouth",
+        "australiaeast",
+        "australiasoutheast",
+        "southindia",
+        "centralindia",
+        "westindia",
+        "canadacentral",
+        "canadaeast",
+        "uksouth",
+        "ukwest",
+        "westcentralus",
+        "westus2"
+      ],
+      "metadata": {
+        "description": "Location of the Logic App."
+      }
+    }
+  },
+  "variables": {},
+  "resources": [
+    {
+      "name": "[parameters('dataExtractionAppName')]",
+      "type": "Microsoft.Logic/workflows",
+      "location": "[parameters('dataExtractionAppLocation')]",
+      "tags": {
+        "displayName": "XkcdDataExtractionApp"
+      },
+      "apiVersion": "2016-06-01",
+      "properties": {
+        "definition": {
+          "$schema": "https://schema.management.azure.com/providers/Microsoft.Logic/schemas/2016-06-01/workflowdefinition.json#",
+          "actions": {
+            "GetLatestComic": {
+              "type": "Function",
+              "inputs": {
+                "function": {
+                  "id": "/subscriptions/f7760501-bcb4-4896-a9c9-bf3d131ab1fb/resourceGroups/anastmTests/providers/Microsoft.Web/sites/XkcdDataExtractionFunctions/functions/GetLatestComic"
+                }
+              },
+              "runAfter": {}
+            },
+            "Get_a_table": {
+              "type": "ApiConnection",
+              "inputs": {
+                "host": {
+                  "connection": {
+                    "name": "@parameters('$connections')['azuretables']['connectionId']"
+                  }
+                },
+                "method": "get",
+                "path": "/Tables/@{encodeURIComponent('XkcdComics')}"
+              },
+              "runAfter": {
+                "Initialize_variable_2": [
+                  "Succeeded"
+                ]
+              }
+            },
+            "Condition": {
+              "type": "If",
+              "expression": {
+                "and": [
+                  {
+                    "equals": [
+                      "@outputs('Get_a_table')['statusCode']",
+                      404
+                    ]
+                  }
+                ]
+              },
+              "actions": {
+                "Create_table": {
+                  "type": "ApiConnection",
+                  "inputs": {
+                    "host": {
+                      "connection": {
+                        "name": "@parameters('$connections')['azuretables']['connectionId']"
+                      }
+                    },
+                    "method": "post",
+                    "body": "XkcdComics",
+                    "path": "/Tables"
+                  },
+                  "runAfter": {}
+                }
+              },
+              "runAfter": {
+                "Get_a_table": [
+                  "Succeeded",
+                  "Failed"
+                ]
+              },
+              "else": {
+                "actions": {
+                  "Until": {
+                    "type": "Until",
+                    "expression": "@equals(variables('counter'), 4)",
+                    "limit": {
+                      "count": 60,
+                      "timeout": "PT1H"
+                    },
+                    "actions": {
+                      "XkcdComicExtractionApp": {
+                        "type": "Workflow",
+                        "inputs": {
+                          "host": {
+                            "triggerName": "manual",
+                            "workflow": {
+                              "id": "/subscriptions/f7760501-bcb4-4896-a9c9-bf3d131ab1fb/resourceGroups/anastmTests/providers/Microsoft.Logic/workflows/XkcdComicExtractionApp"
+                            }
+                          },
+                          "body": {
+                            "comicId": "@variables('counter')"
+                          }
+                        },
+                        "runAfter": {}
+                      },
+                      "Delay": {
+                        "type": "Wait",
+                        "inputs": {
+                          "interval": {
+                            "count": 10,
+                            "unit": "Second"
+                          }
+                        },
+                        "runAfter": {
+                          "Increment_variable": [
+                            "Succeeded",
+                            "Failed",
+                            "Skipped",
+                            "TimedOut"
+                          ]
+                        }
+                      },
+                      "Increment_variable": {
+                        "type": "IncrementVariable",
+                        "inputs": {
+                          "name": "counter",
+                          "value": 1
+                        },
+                        "runAfter": {
+                          "XkcdComicExtractionApp": [
+                            "Succeeded",
+                            "Failed",
+                            "Skipped",
+                            "TimedOut"
+                          ]
+                        }
+                      }
+                    },
+                    "runAfter": {}
+                  }
+                }
+              }
+            },
+            "Initialize_variable": {
+              "type": "InitializeVariable",
+              "inputs": {
+                "variables": [
+                  {
+                    "name": "comicCount",
+                    "type": "Integer",
+                    "value": "@int(body('GetLatestComic'))"
+                  }
+                ]
+              },
+              "runAfter": {
+                "GetLatestComic": [
+                  "Succeeded"
+                ]
+              }
+            },
+            "Initialize_variable_2": {
+              "type": "InitializeVariable",
+              "inputs": {
+                "variables": [
+                  {
+                    "name": "counter",
+                    "type": "Integer",
+                    "value": 1
+                  }
+                ]
+              },
+              "runAfter": {
+                "Initialize_variable": [
+                  "Succeeded"
+                ]
+              }
+            }
+          },
+          "parameters": {
+            "$connections": {
+              "defaultValue": {},
+              "type": "Object"
+            }
+          },
+          "triggers": {
+            "Recurrence": {
+              "type": "Recurrence",
+              "recurrence": {
+                "frequency": "Month",
+                "interval": 3
+              }
+            }
+          },
+          "contentVersion": "1.0.0.0",
+          "outputs": {}
+        },
+        "parameters": {
+          "$connections": {
+            "value": {
+              "azuretables": {
+                "id": "[concat(subscription().id, '/providers/Microsoft.Web/locations/', parameters('dataExtractionAppLocation'), '/managedApis/', 'azuretables')]",
+                "connectionId": "[resourceId('Microsoft.Web/connections', parameters('azuretables_1_Connection_Name'))]",
+                "connectionName": "[parameters('azuretables_1_Connection_Name')]"
+              }
+            }
+          }
+        }
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Web/connections', parameters('azuretables_1_Connection_Name'))]"
+      ]
+    },
+    {
+      "name": "[parameters('XkcdDataName')]",
+      "type": "Microsoft.Storage/storageAccounts",
+      "location": "[resourceGroup().location]",
+      "apiVersion": "2016-01-01",
+      "sku": {
+        "name": "[parameters('XkcdDataType')]"
+      },
+      "dependsOn": [],
+      "tags": {
+        "displayName": "XkcdData"
+      },
+      "kind": "Storage"
+    },
+    {
+      "type": "MICROSOFT.WEB/CONNECTIONS",
+      "apiVersion": "2016-06-01",
+      "name": "[parameters('azuretables_1_Connection_Name')]",
+      "location": "[parameters('dataExtractionAppLocation')]",
+      "properties": {
+        "api": {
+          "id": "[concat(subscription().id, '/providers/Microsoft.Web/locations/', parameters('dataExtractionAppLocation'), '/managedApis/', 'azuretables')]"
+        },
+        "displayName": "[parameters('azuretables_1_Connection_DisplayName')]",
+        "parameterValues": {
+          "storageaccount": "[parameters('azuretables_1_storageaccount')]",
+          "sharedkey": "[parameters('azuretables_1_sharedkey')]"
+        }
+      }
+    },
+    {
+      "name": "[parameters('XkcdComicExtractionAppName')]",
+      "type": "Microsoft.Logic/workflows",
+      "location": "[parameters('XkcdComicExtractionAppLocation')]",
+      "apiVersion": "2016-06-01",
+      "dependsOn": [
+        "[resourceId('Microsoft.Web/connections', parameters('azuretables_1_Connection_Name'))]"
+      ],
+      "tags": {
+        "displayName": "XkcdComicExtractionApp"
+      },
+      "properties": {
+        "definition": {
+          "$schema": "https://schema.management.azure.com/providers/Microsoft.Logic/schemas/2016-06-01/workflowdefinition.json#",
+          "actions": {
+            "GetComicInformation": {
+              "type": "Function",
+              "inputs": {
+                "body": {
+                  "comicId": "@triggerBody()?['comicId']"
+                },
+                "function": {
+                  "id": "/subscriptions/f7760501-bcb4-4896-a9c9-bf3d131ab1fb/resourceGroups/anastmTests/providers/Microsoft.Web/sites/XkcdDataExtractionFunctions/functions/GetComicInformation"
+                }
+              },
+              "runAfter": {}
+            },
+            "GetComicContents": {
+              "type": "Function",
+              "inputs": {
+                "body": {
+                  "comic": "@body('GetComicInformation').ComicUrl"
+                },
+                "function": {
+                  "id": "/subscriptions/f7760501-bcb4-4896-a9c9-bf3d131ab1fb/resourceGroups/anastmTests/providers/Microsoft.Web/sites/XkcdDataExtractionFunctions/functions/GetComicContents"
+                }
+              },
+              "runAfter": {
+                "GetComicInformation": [
+                  "Succeeded"
+                ]
+              }
+            },
+            "Insert_or_Replace_Entity": {
+              "type": "ApiConnection",
+              "inputs": {
+                "host": {
+                  "connection": {
+                    "name": "@parameters('$connections')['azuretables']['connectionId']"
+                  }
+                },
+                "method": "put",
+                "body": "{\n  \"captions\": \"@{concat(body('GetComicContents'), ' ', body('GetComicInformation')?['title'])}\",\n  \"comicId\": @{triggerBody()?['comicId']},\n  \"imageUrl\": \"@{body('GetComicInformation')?['comicUrl']}\"\n}",
+                "path": "/Tables/@{encodeURIComponent('XkcdComics')}/entities(PartitionKey='@{encodeURIComponent('Captions')}',RowKey='@{encodeURIComponent(triggerBody()?['comicId'])}')"
+              },
+              "runAfter": {
+                "GetComicContents": [
+                  "Succeeded"
+                ]
+              }
+            }
+          },
+          "parameters": {
+            "$connections": {
+              "defaultValue": {},
+              "type": "Object"
+            }
+          },
+          "triggers": {
+            "manual": {
+              "type": "Request",
+              "kind": "Http",
+              "inputs": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "comicId": {
+                      "type": "integer"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "contentVersion": "1.0.0.0",
+          "outputs": {}
+        },
+        "parameters": {
+          "$connections": {
+            "value": {
+              "azuretables": {
+                "id": "[concat(subscription().id, '/providers/Microsoft.Web/locations/', parameters('XkcdComicExtractionAppLocation'), '/managedApis/', 'azuretables')]",
+                "connectionId": "[resourceId('Microsoft.Web/connections', parameters('azuretables_1_Connection_Name'))]",
+                "connectionName": "[parameters('azuretables_1_Connection_Name')]"
+              }
+            }
+          }
+        }
+      }
+    }
+  ],
+  "outputs": {}
+}

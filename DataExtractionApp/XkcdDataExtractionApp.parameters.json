@@ -1,0 +1,20 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "dataExtractionAppName": {
+      "value": "XkcdDataExtractionApp"
+    },
+    "XkcdComicExtractionAppName": {
+      "value": "XkcdComicExtractionApp"
+    },
+    "azuretables_1_sharedkey": {
+      "reference": {
+        "keyVault": {
+          "id": "/subscriptions/f7760501-bcb4-4896-a9c9-bf3d131ab1fb/resourceGroups/anastmTests/providers/Microsoft.KeyVault/vaults/XkcdSearchKeyVault"
+        },
+        "secretName": "xkcddatastoragekey"
+      }
+    }
+  }
+}

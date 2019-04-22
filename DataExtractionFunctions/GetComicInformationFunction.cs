@@ -10,9 +10,9 @@ using Newtonsoft.Json;
 
 namespace XkcdSearch.DataExtractionFunctions
 {
-    public static class GetComicUrlFunction
+    public static class GetComicInformationFunction
     {
-        [FunctionName("GetComicUrl")]
+        [FunctionName("GetComicInformation")]
         public static async Task<IActionResult> Run(
             [HttpTrigger(AuthorizationLevel.Function, "get", "post", Route = null)] HttpRequest req,
             ILogger log)
@@ -23,13 +23,13 @@ namespace XkcdSearch.DataExtractionFunctions
                 comicId = ParameterManager.SanitizeParameter(comicId, ParameterManager.ParameterType.Numeric, "");
 
                 XkcdDataCollector collector = new XkcdDataCollector();
-                var result = await collector.GetComicImage(comicId);
+                var result = await collector.GetComicInformation(comicId);
 
                 return new OkObjectResult(result);
             }
             catch (Exception ex)
             {
-                log.LogError(ex, "GetComicUrl failed");
+                log.LogError(ex, "GetComicInformation failed");
                 return new StatusCodeResult(500);
             }
         }

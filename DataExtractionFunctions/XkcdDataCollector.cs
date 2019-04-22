@@ -14,7 +14,10 @@ namespace XkcdSearch.DataExtractionFunctions
         private const string imagelinkHint = "Image URL (for hotlinking/embedding):";
 
         private const string permalinkRegex = @"https://xkcd\.com/(\d+)/";
-        private const string imagelinkRegex = @"https://imgs\.xkcd\.com/comics/[\w\.]+";
+        private const string imagelinkRegex = @"https://imgs\.xkcd\.com/comics/[\w\(\)\.]+";
+
+        private const string titleHint = @"<title>";
+        private const string titleRegex = @"xkcd:([^\<]+)\</title\>";
 
         private async Task<string> GetStringFromPage(
             string url,
@@ -25,12 +28,21 @@ namespace XkcdSearch.DataExtractionFunctions
             using (var client = new HttpClient())
             {
                 string result = await client.GetStringAsync(url);
-                var linkText = result.Substring(result.IndexOf(hint) + hint.Length).TrimStart();
-
-                Regex r = new Regex(regex);
-                var match = r.Match(linkText);
-                return match.Groups[capture].Value;
+                return GetStringFromContent(result, hint, regex, capture);               
             }
+        }
+
+        private string GetStringFromContent(
+            string content,
+            string hint,
+            string regex,
+            int capture)
+        {
+            var text = content.Substring(content.IndexOf(hint) + hint.Length).TrimStart();
+
+            Regex r = new Regex(regex);
+            var match = r.Match(text);
+            return match.Groups[capture].Value;
         }
 
         public async Task<string> GetLatestComic()
@@ -42,13 +54,29 @@ namespace XkcdSearch.DataExtractionFunctions
                 1);
         }
 
-        public async Task<string> GetComicImage(string comicId)
+        public async Task<XkcdComicInformation> GetComicInformation(string comicId)
         {
-            return await GetStringFromPage(
-                rootUrl + comicId,
-                imagelinkHint,
-                imagelinkRegex, 
-                0);
+            using (var client = new HttpClient())
+            {
+                string pageSource = await client.GetStringAsync(rootUrl + comicId);
+                var imageUrl = GetStringFromContent(
+                    pageSource,
+                    imagelinkHint,
+                    imagelinkRegex,
+                    0);
+
+                var title = GetStringFromContent(
+                    pageSource,
+                    titleHint,
+                    titleRegex,
+                    1);
+
+                return new XkcdComicInformation()
+                {
+                    ComicUrl = imageUrl,
+                    Title = title.Trim(),
+                };
+            }
         }
     }
 }
