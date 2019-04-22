@@ -3,7 +3,11 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.28803.202
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DataExtractionFunctions", "DataExtractionFunctions\DataExtractionFunctions.csproj", "{F5771179-27E3-4979-8713-958981356FF8}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DataExtractionFunctions", "DataExtractionFunctions\DataExtractionFunctions.csproj", "{F5771179-27E3-4979-8713-958981356FF8}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{5F79089A-403E-47E6-910A-7AD417B149E0}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DataExtractionFunctionsTest", "DataExtractionFunctionsTest\DataExtractionFunctionsTest.csproj", "{62A51ED9-9C61-4E5F-BA2E-3038E96A3D54}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,9 +19,16 @@ Global
 		{F5771179-27E3-4979-8713-958981356FF8}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F5771179-27E3-4979-8713-958981356FF8}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F5771179-27E3-4979-8713-958981356FF8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{62A51ED9-9C61-4E5F-BA2E-3038E96A3D54}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{62A51ED9-9C61-4E5F-BA2E-3038E96A3D54}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{62A51ED9-9C61-4E5F-BA2E-3038E96A3D54}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{62A51ED9-9C61-4E5F-BA2E-3038E96A3D54}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{62A51ED9-9C61-4E5F-BA2E-3038E96A3D54} = {5F79089A-403E-47E6-910A-7AD417B149E0}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {DB371C56-0A5F-4420-B915-9C85D1340015}

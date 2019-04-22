@@ -12,6 +12,9 @@ namespace XkcdSearch.DataExtractionFunctions
 {
     public static class GetComicContentsFunction
     {
+        public const string EndpointVariableName = "ComputerVisionEndpoint";
+        public const string ApiKeyVariableName = "ComputerVisionApiKey";
+
         [FunctionName("GetComicContents")]
         public static async Task<IActionResult> Run(
             [HttpTrigger(AuthorizationLevel.Function, "get", "post", Route = null)] HttpRequest req,
@@ -22,8 +25,8 @@ namespace XkcdSearch.DataExtractionFunctions
                 string comic = await ParameterManager.GetParameterValue(req, "comic", (d) => d?.comic);
 
                 OcrCaptionExtractor extractor = new OcrCaptionExtractor(
-                    System.Environment.GetEnvironmentVariable("ComputerVisionEndpoint", EnvironmentVariableTarget.Process),
-                     System.Environment.GetEnvironmentVariable("ComputerVisionApiKey", EnvironmentVariableTarget.Process));
+                    System.Environment.GetEnvironmentVariable(EndpointVariableName, EnvironmentVariableTarget.Process),
+                     System.Environment.GetEnvironmentVariable(ApiKeyVariableName, EnvironmentVariableTarget.Process));
 
                 return new OkObjectResult(await extractor.GetTextFromImage(comic));
             }
