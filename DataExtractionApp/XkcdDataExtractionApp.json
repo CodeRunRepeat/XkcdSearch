@@ -2,6 +2,10 @@
   "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
   "contentVersion": "1.0.0.0",
   "parameters": {
+    "accounts_XkcdOcrService_name": {
+      "defaultValue": "XkcdOcrService",
+      "type": "String"
+    },
     "searchServices_xkcdsearch_name": {
       "defaultValue": "xkcdsearch",
       "type": "String"
@@ -134,10 +138,6 @@
         "description": "Location of the Logic App."
       }
     },
-    "accounts_XkcdOcrService_name": {
-      "defaultValue": "XkcdOcrService",
-      "type": "String"
-    },
     "XkcdDailyExtractionAppName": {
       "type": "string",
       "minLength": 1,
@@ -183,6 +183,17 @@
   },
   "variables": {},
   "resources": [
+    {
+      "type": "Microsoft.CognitiveServices/accounts",
+      "apiVersion": "2016-02-01-preview",
+      "name": "[parameters('accounts_XkcdOcrService_name')]",
+      "location": "westeurope",
+      "sku": {
+        "name": "S1"
+      },
+      "kind": "ComputerVision",
+      "properties": {}
+    },
     {
       "type": "Microsoft.Search/searchServices",
       "apiVersion": "2015-08-19",
@@ -278,18 +289,7 @@
         "enabledForDiskEncryption": false,
         "enabledForTemplateDeployment": true
       }
-    },
-    {
-      "type": "Microsoft.CognitiveServices/accounts",
-      "apiVersion": "2016-02-01-preview",
-      "name": "[parameters('accounts_XkcdOcrService_name')]",
-      "location": "westeurope",
-      "sku": {
-        "name": "F0"
-      },
-      "kind": "ComputerVision",
-      "properties": {}
-    },
+    },  
     {
       "name": "[parameters('dataExtractionAppName')]",
       "type": "Microsoft.Logic/workflows",
@@ -382,27 +382,11 @@
                             }
                           },
                           "body": {
-                            "comicId": "@variables('counter')"
+                            "comicId": "@variables('counter')",
+                            "newOnly": true
                           }
                         },
                         "runAfter": {}
-                      },
-                      "Delay": {
-                        "type": "Wait",
-                        "inputs": {
-                          "interval": {
-                            "count": 10,
-                            "unit": "Second"
-                          }
-                        },
-                        "runAfter": {
-                          "Increment_variable": [
-                            "Succeeded",
-                            "Failed",
-                            "Skipped",
-                            "TimedOut"
-                          ]
-                        }
                       },
                       "Increment_variable": {
                         "type": "IncrementVariable",
@@ -416,6 +400,36 @@
                             "Failed",
                             "Skipped",
                             "TimedOut"
+                          ]
+                        }
+                      },
+                      "If_response_is_200": {
+                        "type": "If",
+                        "expression": {
+                          "and": [
+                            {
+                              "equals": [
+                                "@outputs('XkcdComicExtractionApp')?['statusCode']",
+                                200
+                              ]
+                            }
+                          ]
+                        },
+                        "actions": {
+                          "Delay": {
+                            "type": "Wait",
+                            "inputs": {
+                              "interval": {
+                                "count": 3,
+                                "unit": "Second"
+                              }
+                            },
+                            "runAfter": {}
+                          }
+                        },
+                        "runAfter": {
+                          "Increment_variable": [
+                            "Succeeded"
                           ]
                         }
                       }
@@ -549,7 +563,11 @@
                   "id": "/subscriptions/f7760501-bcb4-4896-a9c9-bf3d131ab1fb/resourceGroups/anastmTests/providers/Microsoft.Web/sites/XkcdDataExtractionFunctions/functions/GetComicInformation"
                 }
               },
-              "runAfter": {}
+              "runAfter": {
+                "Condition_process_new_only": [
+                  "Succeeded"
+                ]
+              }
             },
             "GetComicContents": {
               "type": "Function",
@@ -585,7 +603,7 @@
                 ]
               }
             },
-            "Response": {
+            "Response_200": {
               "type": "Response",
               "kind": "http",
               "inputs": {
@@ -597,6 +615,78 @@
                   "Succeeded"
                 ]
               }
+            },
+            "Condition_process_new_only": {
+              "type": "If",
+              "expression": {
+                "and": [
+                  {
+                    "equals": [
+                      "@triggerBody()?['newOnly']",
+                      true
+                    ]
+                  }
+                ]
+              },
+              "actions": {
+                "Get_entity": {
+                  "type": "ApiConnection",
+                  "inputs": {
+                    "host": {
+                      "connection": {
+                        "name": "@parameters('$connections')['azuretables']['connectionId']"
+                      }
+                    },
+                    "method": "get",
+                    "path": "/Tables/@{encodeURIComponent('XkcdComics')}/entities(PartitionKey='@{encodeURIComponent('Captions')}',RowKey='@{encodeURIComponent(triggerBody()?['comicId'])}')"
+                  },
+                  "runAfter": {}
+                },
+                "Condition_entity_exists": {
+                  "type": "If",
+                  "expression": {
+                    "and": [
+                      {
+                        "not": {
+                          "equals": [
+                            "@outputs('Get_entity')?['statusCode']",
+                            404
+                          ]
+                        }
+                      }
+                    ]
+                  },
+                  "actions": {
+                    "Response_204": {
+                      "type": "Response",
+                      "kind": "http",
+                      "inputs": {
+                        "statusCode": 204
+                      },
+                      "runAfter": {}
+                    },
+                    "Terminate": {
+                      "type": "Terminate",
+                      "inputs": {
+                        "runStatus": "Succeeded"
+                      },
+                      "runAfter": {
+                        "Response_204": [
+                          "Succeeded"
+                        ]
+                      }
+                    }
+                  },
+                  "runAfter": {
+                    "Get_entity": [
+                      "Succeeded",
+                      "Failed",
+                      "TimedOut"
+                    ]
+                  }
+                }
+              },
+              "runAfter": {}
             }
           },
           "parameters": {
@@ -615,6 +705,9 @@
                   "properties": {
                     "comicId": {
                       "type": "integer"
+                    },
+                    "newOnly": {
+                      "type": "boolean"
                     }
                   }
                 }
