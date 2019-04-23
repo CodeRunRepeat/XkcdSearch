@@ -289,7 +289,7 @@
         "enabledForDiskEncryption": false,
         "enabledForTemplateDeployment": true
       }
-    },  
+    },
     {
       "name": "[parameters('dataExtractionAppName')]",
       "type": "Microsoft.Logic/workflows",
@@ -429,7 +429,10 @@
                         },
                         "runAfter": {
                           "Increment_variable": [
-                            "Succeeded"
+                            "Succeeded",
+                            "Failed",
+                            "Skipped",
+                            "TimedOut"
                           ]
                         }
                       }
