@@ -22,18 +22,6 @@
     "XkcdDailyExtractionAppName": {
       "value": "Xkcd-DailyExtractionApp"
     },
-    "components_XkcdSearchAppInsights_name": {
-      "value": "Xkcd-SearchAppInsights"
-    },
-    "accounts_XkcdOcrService_name": {
-      "value": "Xkcd-OcrService"
-    },
-    "searchServices_xkcdsearch_name": {
-      "value": "xkcd-search"
-    },
-    "serverfarms_XkcdDataExtractionFunctionsPlan_name": {
-      "value": "Xkcd-DataExtractionFunctionsPlan"
-    },
     "vaults_XkcdSearchKeyVault_name": {
       "value": "Xkcd-SearchKeyVault"
     },

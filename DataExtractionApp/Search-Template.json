@@ -1,0 +1,30 @@
+﻿{
+  "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "searchServices_xkcdsearch_name": {
+      "defaultValue": "xkcdsearch",
+      "type": "String"
+    }
+  },
+  "variables": {
+  },
+  "resources": [
+    {
+      "type": "Microsoft.Search/searchServices",
+      "apiVersion": "2015-08-19",
+      "name": "[parameters('searchServices_xkcdsearch_name')]",
+      "location": "West Europe",
+      "sku": {
+        "name": "free"
+      },
+      "properties": {
+        "replicaCount": 1,
+        "partitionCount": 1,
+        "hostingMode": "Default"
+      }
+    }
+  ],
+  "outputs": {
+  }
+}

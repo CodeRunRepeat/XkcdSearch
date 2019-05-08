@@ -23,12 +23,18 @@
   <Import Condition=" Exists('$(MSBuildExtensionsPath)\Microsoft\VisualStudio\v$(VisualStudioVersion)\Deployment\1.1\DeploymentProject.targets') " Project="$(MSBuildExtensionsPath)\Microsoft\VisualStudio\v$(VisualStudioVersion)\Deployment\1.1\DeploymentProject.targets" />
   <!-- vertag<:>end -->
   <ItemGroup>
+    <Content Include="CognitiveServices-Template.json" />
     <None Include="Deployment.targets">
       <Visible>False</Visible>
     </None>
+    <Content Include="CognitiveServices-Template.parameters.json" />
+    <Content Include="Search-Template.parameters.json" />
+    <Content Include="Functions-Template.parameters.json" />
     <Content Include="Deploy-AzureResourceGroup.ps1" />
-    <Content Include="XkcdDataExtractionApp.json" />
-    <Content Include="XkcdDataExtractionApp.parameters.json" />
+    <Content Include="LogicApps-Template.json" />
+    <Content Include="LogicApps-Template.parameters.json" />
+    <Content Include="Functions-Template.json" />
+    <Content Include="Search-Template.json" />
     <None Include="xkcdsearch\xkcdcomics-index.json" />
     <None Include="xkcdsearch\xkcdcomics-indexer.json" />
     <None Include="xkcdsearch\xkcdcomicsdatasource.json" />

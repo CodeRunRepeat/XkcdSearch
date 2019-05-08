@@ -1,23 +1,8 @@
 {
   "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
   "contentVersion": "1.0.0.0",
-  "parameters": {
-    "components_XkcdSearchAppInsights_name": {
-      "defaultValue": "XkcdSearchAppInsights",
-      "type": "String"
-    },
-    "accounts_XkcdOcrService_name": {
-      "defaultValue": "XkcdOcrService",
-      "type": "String"
-    },
-    "searchServices_xkcdsearch_name": {
-      "defaultValue": "xkcdsearch",
-      "type": "String"
-    },
-    "serverfarms_XkcdDataExtractionFunctionsPlan_name": {
-      "defaultValue": "XkcdDataExtractionFunctionsPlan",
-      "type": "String"
-    },
+  "parameters": { 
+    
     "XkcdDataExtractionFunctionsAppName": {
       "defaultValue": "XkcdDataExtractionFunctions",
       "type": "String"
@@ -190,65 +175,7 @@
     }
   },
   "variables": {},
-  "resources": [
-    {
-      "type": "microsoft.insights/components",
-      "apiVersion": "2015-05-01",
-      "name": "[parameters('components_XkcdSearchAppInsights_name')]",
-      "location": "westeurope",
-      "kind": "other",
-      "properties": {
-        "Application_Type": "other",
-        "Flow_Type": "Redfield",
-        "Request_Source": "IbizaAIExtension"
-      }
-    },
-    {
-      "type": "Microsoft.CognitiveServices/accounts",
-      "apiVersion": "2016-02-01-preview",
-      "name": "[parameters('accounts_XkcdOcrService_name')]",
-      "location": "westeurope",
-      "sku": {
-        "name": "S1"
-      },
-      "kind": "ComputerVision",
-      "properties": {}
-    },
-    {
-      "type": "Microsoft.Search/searchServices",
-      "apiVersion": "2015-08-19",
-      "name": "[parameters('searchServices_xkcdsearch_name')]",
-      "location": "West Europe",
-      "sku": {
-        "name": "free"
-      },
-      "properties": {
-        "replicaCount": 1,
-        "partitionCount": 1,
-        "hostingMode": "Default"
-      }
-    },
-    {
-      "type": "Microsoft.Web/serverfarms",
-      "apiVersion": "2016-09-01",
-      "name": "[parameters('serverfarms_XkcdDataExtractionFunctionsPlan_name')]",
-      "location": "West Europe",
-      "sku": {
-        "name": "Y1",
-        "tier": "Dynamic",
-        "size": "Y1",
-        "family": "Y",
-        "capacity": 0
-      },
-      "kind": "functionapp",
-      "properties": {
-        "name": "[parameters('serverfarms_XkcdDataExtractionFunctionsPlan_name')]",
-        "perSiteScaling": false,
-        "reserved": false,
-        "targetWorkerCount": 0,
-        "targetWorkerSizeId": 0
-      }
-    },
+  "resources": [  
     {
       "type": "Microsoft.KeyVault/vaults",
       "apiVersion": "2016-10-01",

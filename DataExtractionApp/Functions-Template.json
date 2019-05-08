@@ -1,0 +1,57 @@
+﻿{
+  "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "serverfarms_XkcdDataExtractionFunctionsPlan_name": {
+      "defaultValue": "XkcdDataExtractionFunctionsPlan",
+      "type": "String"
+    },
+    "XkcdDataExtractionFunctionsAppName": {
+      "defaultValue": "XkcdDataExtractionFunctions",
+      "type": "String"
+    },
+    "components_XkcdSearchAppInsights_name": {
+      "defaultValue": "XkcdSearchAppInsights",
+      "type": "String"
+    }
+  },
+  "variables": {
+  },
+  "resources": [
+    {
+      "type": "Microsoft.Web/serverfarms",
+      "apiVersion": "2016-09-01",
+      "name": "[parameters('serverfarms_XkcdDataExtractionFunctionsPlan_name')]",
+      "location": "West Europe",
+      "sku": {
+        "name": "Y1",
+        "tier": "Dynamic",
+        "size": "Y1",
+        "family": "Y",
+        "capacity": 0
+      },
+      "kind": "functionapp",
+      "properties": {
+        "name": "[parameters('serverfarms_XkcdDataExtractionFunctionsPlan_name')]",
+        "perSiteScaling": false,
+        "reserved": false,
+        "targetWorkerCount": 0,
+        "targetWorkerSizeId": 0
+      }
+    },
+    {
+      "type": "microsoft.insights/components",
+      "apiVersion": "2015-05-01",
+      "name": "[parameters('components_XkcdSearchAppInsights_name')]",
+      "location": "westeurope",
+      "kind": "other",
+      "properties": {
+        "Application_Type": "other",
+        "Flow_Type": "Redfield",
+        "Request_Source": "IbizaAIExtension"
+      }
+    }
+  ],
+  "outputs": {
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "XkcdDataExtractionFunctionsAppName": {
+      "value":  "Xkcd-DataExtractionFunctions"
+    },
+     "components_XkcdSearchAppInsights_name": {
+      "value": "Xkcd-SearchAppInsights"
+    },
+    "serverfarms_XkcdDataExtractionFunctionsPlan_name": {
+      "value": "Xkcd-DataExtractionFunctionsPlan"
+    }
+  }
+}
