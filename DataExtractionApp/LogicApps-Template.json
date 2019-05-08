@@ -91,6 +91,7 @@
     },
     "XkcdComicExtractionAppName": {
       "type": "string",
+      "defaultValue":  "XkcdComicExtractionApp",
       "minLength": 1,
       "maxLength": 80,
       "metadata": {
@@ -708,7 +709,8 @@
                 "host": {
                   "triggerName": "manual",
                   "workflow": {
-                    "id": "[concat(resourceGroup().id, '/providers/Microsoft.Logic/workflows/', parameters('XkcdComicExtractionAppName'))]"
+                    // "id": "[concat(resourceGroup().id, '/providers/Microsoft.Logic/workflows/', parameters('XkcdComicExtractionAppName'))]"
+                    "id": "/subscriptions/0a52391c-0d81-434e-90b4-d04f5c670e8a/resourceGroups/anastmTest/providers/Microsoft.Logic/workflows/Xkcd-ComicExtractionApp"
                   }
                 },
                 "body": {
