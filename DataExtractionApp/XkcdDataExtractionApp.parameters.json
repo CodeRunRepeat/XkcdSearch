@@ -2,22 +2,46 @@
   "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
   "contentVersion": "1.0.0.0",
   "parameters": {
-    "dataExtractionAppName": {
-      "value": "XkcdDataExtractionApp"
+    "XkcdDataExtractionFunctionsAppName": {
+      "value":  "Xkcd-DataExtractionFunctions"
+    },
+    "XkcdDataExtractionAppName": {
+      "value": "Xkcd-DataExtractionApp"
     },
     "XkcdComicExtractionAppName": {
-      "value": "XkcdComicExtractionApp"
+      "value": "Xkcd-ComicExtractionApp"
     },
     "azuretables_1_sharedkey": {
       "reference": {
         "keyVault": {
-          "id": "/subscriptions/f7760501-bcb4-4896-a9c9-bf3d131ab1fb/resourceGroups/anastmTests/providers/Microsoft.KeyVault/vaults/XkcdSearchKeyVault"
+          "id": "/subscriptions/0a52391c-0d81-434e-90b4-d04f5c670e8a/resourceGroups/anastmTest/providers/Microsoft.KeyVault/vaults/Xkcd-SearchKeyVault"
         },
         "secretName": "xkcddatastoragekey"
       }
     },
     "XkcdDailyExtractionAppName": {
-      "value": "XkcdDailyExtractionApp"
+      "value": "Xkcd-DailyExtractionApp"
+    },
+    "components_XkcdSearchAppInsights_name": {
+      "value": "Xkcd-SearchAppInsights"
+    },
+    "accounts_XkcdOcrService_name": {
+      "value": "Xkcd-OcrService"
+    },
+    "searchServices_xkcdsearch_name": {
+      "value": "xkcd-search"
+    },
+    "serverfarms_XkcdDataExtractionFunctionsPlan_name": {
+      "value": "Xkcd-DataExtractionFunctionsPlan"
+    },
+    "vaults_XkcdSearchKeyVault_name": {
+      "value": "Xkcd-SearchKeyVault"
+    },
+    "XkcdDataName": {
+      "value": "xkcddatastorage2"
+    },
+    "azuretables_1_storageaccount": {
+      "value": "xkcddatastorage2"
     }
   }
 }
